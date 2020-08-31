@@ -1,0 +1,5 @@
+{
+  "models-path": "./testdata/models",
+  "samples-path": "./testdata/samples",
+  "output-path": "./output"
+}
