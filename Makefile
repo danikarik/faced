@@ -1,10 +1,14 @@
-all: prep build run
+all: prep build
 
 prep:
 	@mkdir -p bin/ output/
 
 build:
-	@go build -o bin/faced ./cmd/faced/...
+	@go build -o bin/compare ./cmd/compare/...
+	@go build -o bin/recognize ./cmd/recognize/...
 
-run:
-	@bin/faced
+recognize:
+	@bin/recognize
+
+compare:
+	@bin/compare
