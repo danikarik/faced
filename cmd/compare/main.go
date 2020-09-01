@@ -41,7 +41,7 @@ func main() {
 
 	var (
 		path     = fs.String("models-path", "", "Models directory path")
-		samples  = fs.String("samples-path", "", "Image samples path")
+		_        = fs.String("samples-path", "", "Image samples path")
 		_        = fs.String("output-path", "", "Face detection output path")
 		passport = fs.String("passport-image-name", "", "Verified passport image name")
 		input    = fs.String("input-image-name", "", "Input image name")
@@ -66,7 +66,7 @@ func main() {
 		exit(1, err)
 	}
 
-	faces, err := rec.RecognizeFile(filepath.Join(*samples, *passport))
+	faces, err := rec.RecognizeFile(*passport)
 	if err != nil {
 		exit(1, err)
 	}
@@ -87,7 +87,7 @@ func main() {
 
 	rec.SetSamples(known, categories)
 
-	inputFace, err := recognizeByPath(rec, filepath.Join(*samples, *input))
+	inputFace, err := recognizeByPath(rec, *input)
 	if err != nil {
 		exit(1, err)
 	}
