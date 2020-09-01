@@ -70,17 +70,14 @@ func main() {
 	if err != nil {
 		exit(1, err)
 	}
-	if len(faces) < 10 {
+	if len(faces) < 1 {
 		exit(1, errors.New("wrong number of faces"))
 	}
 
 	var (
 		known      []face.Descriptor
 		categories []int32
-		labels     = []string{
-			"Sungyeon", "Yehana", "Roa", "Eunwoo", "Xiyeon",
-			"Kyulkyung", "Nayoung", "Rena", "Kyla", "Yuha",
-		}
+		labels     = []string{"Obama"}
 	)
 
 	for i, f := range faces {
@@ -95,8 +92,7 @@ func main() {
 		exit(1, err)
 	}
 
-	// if id := rec.ClassifyThreshold(inputFace.Descriptor, 0.85); id < 0 {
-	if id := rec.Classify(inputFace.Descriptor); id < 0 {
+	if id := rec.ClassifyThreshold(inputFace.Descriptor, 0.5); id < 0 {
 		exit(1, errors.New("cannot classify input image"))
 	} else {
 		fmt.Println("OK.", labels[id])
