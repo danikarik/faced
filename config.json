@@ -2,6 +2,6 @@
   "models-path": "./testdata/models",
   "samples-path": "./testdata/samples",
   "output-path": "./output",
-  "passport-image-name": "multiple/pristin.jpg",
-  "input-image-name": "nayoung.jpg"
+  "passport-image-name": "obama_passport.jpg",
+  "input-image-name": "obama.jpg"
 }
