@@ -1,5 +1,7 @@
 {
   "models-path": "./testdata/models",
   "samples-path": "./testdata/samples",
-  "output-path": "./output"
+  "output-path": "./output",
+  "passport-image-name": "multiple/pristin.jpg",
+  "input-image-name": "nayoung.jpg"
 }

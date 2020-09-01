@@ -10,6 +10,7 @@ import (
 	_ "image/jpeg"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Kagami/go-face"
 	"github.com/peterbourgon/ff/v3"
@@ -23,17 +24,19 @@ func exit(code int, a ...interface{}) {
 }
 
 func main() {
-	fs := flag.NewFlagSet("faced", flag.ExitOnError)
+	fs := flag.NewFlagSet("recognize", flag.ExitOnError)
 
 	var (
 		path    = fs.String("models-path", "", "Models directory path")
 		samples = fs.String("samples-path", "", "Image samples path")
 		output  = fs.String("output-path", "", "Face detection output path")
+		_       = fs.String("passport-image-name", "", "Verified passport image name")
+		_       = fs.String("input-image-name", "", "Input image name")
 		_       = fs.String("config", "", "Config file (optional)")
 	)
 
 	if err := ff.Parse(fs, os.Args[1:],
-		ff.WithEnvVarPrefix("FACED"),
+		ff.WithEnvVarPrefix("RECOGNIZE"),
 		ff.WithConfigFile("config.json"),
 		ff.WithConfigFileParser(ff.JSONParser),
 	); err != nil {
@@ -47,7 +50,7 @@ func main() {
 	defer rec.Close()
 
 	if err := filepath.Walk(*samples, func(fpath string, info os.FileInfo, err error) error {
-		if info.IsDir() {
+		if info.IsDir() || strings.Contains(fpath, "multiple") {
 			return nil
 		}
 
