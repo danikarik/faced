@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Kagami/go-face"
 	"github.com/peterbourgon/ff/v3"
@@ -40,12 +41,12 @@ func main() {
 	fs := flag.NewFlagSet("compare", flag.ExitOnError)
 
 	var (
-		path     = fs.String("models-path", "", "Models directory path")
-		_        = fs.String("samples-path", "", "Image samples path")
-		_        = fs.String("output-path", "", "Face detection output path")
-		passport = fs.String("passport-image-name", "", "Verified passport image name")
-		input    = fs.String("input-image-name", "", "Input image name")
-		_        = fs.String("config", "", "Config file (optional)")
+		path    = fs.String("models-path", "", "Models directory path")
+		samples = fs.String("samples-path", "", "Image samples path")
+		_       = fs.String("output-path", "", "Face detection output path")
+		_       = fs.String("passport-image-name", "", "Verified passport image name")
+		input   = fs.String("input-image-name", "", "Input image name")
+		_       = fs.String("config", "", "Config file (optional)")
 	)
 
 	if err := ff.Parse(fs, os.Args[1:],
@@ -62,27 +63,35 @@ func main() {
 	}
 	defer rec.Close()
 
-	if err := checkExtension(*passport); err != nil {
-		exit(1, err)
-	}
-
-	faces, err := rec.RecognizeFile(*passport)
-	if err != nil {
-		exit(1, err)
-	}
-	if len(faces) < 1 {
-		exit(1, errors.New("wrong number of faces"))
-	}
-
 	var (
 		known      []face.Descriptor
 		categories []int32
-		labels     = []string{"Obama"}
+		labels     []string
+		index      int32
 	)
 
-	for i, f := range faces {
-		known = append(known, f.Descriptor)
-		categories = append(categories, int32(i))
+	if err := filepath.Walk(*samples, func(fpath string, info os.FileInfo, err error) error {
+		if info.IsDir() || strings.Contains(fpath, "multiple") {
+			return nil
+		}
+
+		if err := checkExtension(fpath); err != nil {
+			return err
+		}
+
+		face, err := recognizeByPath(rec, fpath)
+		if err != nil {
+			return err
+		}
+
+		known = append(known, face.Descriptor)
+		categories = append(categories, index)
+		labels = append(labels, fpath)
+
+		index++
+		return nil
+	}); err != nil {
+		exit(1, err)
 	}
 
 	rec.SetSamples(known, categories)
@@ -95,6 +104,6 @@ func main() {
 	if id := rec.ClassifyThreshold(inputFace.Descriptor, 0.5); id < 0 {
 		exit(1, errors.New("cannot classify input image"))
 	} else {
-		fmt.Println("OK.", labels[id])
+		fmt.Println("OK.", labels[id], id)
 	}
 }
